@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cosmic Friends</title>
+    <meta name="description" content="Cosmic Friends Start Page">
+    <meta name="author" content="Vladislav Lanskikh">
+    <link rel="icon" href="../../favicon.ico">
+
+    <script src="phaser.js"></script>
+    <script type="text/javascript" src="cosmicFriends.js"></script>
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="../socket.io/socket.io.js"></script>
+    <style type="text/css">
+        @font-face {
+            font-family: 'Orbitron';
+            src: url(fonts/Orbitron/Orbitron-Regular.ttf);
+        }
+
+        p, h1 {
+            font-family: Orbitron;
+            color: white;
+        }
+
+        body {
+            background-color: black;
+            text-align: center;
+        }
+        canvas {
+            display: inline-block;
+        }
+        #game {
+            display: inline-block;
+        }
+        a {
+            color: white;
+            text-decoration: none;
+        }
+        a:hover {
+            color: #5a5a5a;
+        }
+    </style>
+    <script>
+        WebFontConfig = {
+            custom: {
+                families: ['Orbitron'],
+                testStrings: {
+                    'Orbitron': '\uE003\uE005'
+                }
+            }
+        };
+    </script>
+</head>
+<body>
+<h1>
+    <a href="../../index.html">
+        Cosmic friedns
+    </a>
+</h1>
+
+</body>
+<!--canvas to center-->
+<script type="text/javascript">
+    function canvasToCenter() {
+        var canvas = document.getElementsByTagName('canvas')[0];
+        canvas.style.display = 'inline-block';
+        canvas.style.border = '1px solid silver';
+
+        // to prevent resize of canvas when method zoomOut has been initialized
+        document.onfocus = function() {
+            var timerId2 = setInterval(function() {
+                if ((canvas.style.width !== "800px") && (canvas.style.height !== "600px")) {
+                    canvas.style.width = "800px";
+                    canvas.style.height = "600px";
+                    clearInterval(timerId2);
+                }
+            }, 20);
+            setTimeout(function() {
+                clearInterval(timerId2);
+            }, 2000);
+        }
+    }
+
+    setTimeout(function() {
+        canvasToCenter();
+    }, 50);
+
+</script>
+<script>
+    const socket = io.connect('http://localhost:3100');
+    let ourId;
+
+    socket.on('Enter message', function(msg) {
+        ourId = msg;
+    });
+
+    document.onkeydown = checkKey;
+    function checkKey(e) {
+        e = e || window.event;
+        console.log(e.keyCode);
+        if (e.keyCode == '38') {
+            // up arrow
+            console.log('user #' + ourId + ' pressed up arrow');
+        }
+        else if (e.keyCode == '40') {
+            // down arrow
+            console.log('user #' + ourId + ' pressed down arrow');
+        }
+        else if (e.keyCode == '37') {
+            // left arrow
+            console.log('user #' + ourId + ' pressed left arrow');
+        }
+        else if (e.keyCode == '39') {
+            // right arrow
+            console.log('user #' + ourId + ' pressed right arrow');
+        }
+        else if (e.keyCode == '68') {
+            //d
+            console.log('user #' + ourId + ' pressed D');
+        }
+        else if (e.keyCode == '83') {
+            console.log('user #' + ourId + ' pressed S');
+            //s
+        }
+        else if (e.keyCode == '65') {
+            //a
+            console.log('user #' + ourId + ' pressed A');
+        }
+        else if (e.keyCode == '87') {
+            console.log('user #' + ourId + ' pressed W');
+            //w
+        }
+        else if (e.keyCode == '32') {
+            console.log('user #' + ourId + ' pressed spacebar');
+            //spacebar
+        }
+        else if (e.keyCode == '48') {
+            console.log('user #' + ourId + ' pressed zero');
+            //zero
+        }
+    }
+</script>
+</html>
