@@ -24,7 +24,6 @@ app.get('/', function(req, res) {
     }
 });
 
-
 //to see headers of request object
 app.get('/headers', function(req, res) {
     res.set('Content-Type', 'text/plain');
@@ -60,7 +59,11 @@ app.use(function(err, req, res, next) {
 io.on('connection', function(socket) {
     console.log('connection');
     users++;
-    socket.emit('Enter message', users);
+    console.log('users: ' + users);
+    socket.broadcast.emit('Enter message', users);
+    if (users === 2) {
+        socket.broadcast.emit('Allow start', true);
+    }
     // when the client emits 'new message',
     // this listens and executes
     socket.on('message', function(msg) {
@@ -68,6 +71,9 @@ io.on('connection', function(socket) {
     });
     socket.on('disconnect', function(msg) {
         users--;
+        socket.emit('Enter message', users);
         console.log('user disconnected');
+        console.log('users: ' + users);
+
     });
 });

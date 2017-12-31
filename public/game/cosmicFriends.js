@@ -1,7 +1,7 @@
 let game = new Phaser.Game(800, 600, Phaser.CANVAS, 'phaser-example',
-{
-    preload: preload, create: create, update: update, render: render
-});
+    {
+        preload: preload, create: create, update: update, render: render
+    });
 
 function preload() {
     game.time.advancedTiming = true;
@@ -73,23 +73,23 @@ function create() {
     game.physics.arcade.gravity.y = 750;
 
 //Maybe I will create a Grenades class?
-grenades1 = game.add.group();
-grenades1.enableBody = true;
-grenades1.physicsBodyType = Phaser.Physics.ARCADE;
-grenades1.createMultiple(30, 'grenades1');
-grenades1.setAll('anchor.x', 0.5);
-grenades1.setAll('anchor.y', 1);
-grenades1.setAll('outOfBoundsKill', true);
-grenades1.setAll('checkWorldBounds', true);
+    grenades1 = game.add.group();
+    grenades1.enableBody = true;
+    grenades1.physicsBodyType = Phaser.Physics.ARCADE;
+    grenades1.createMultiple(30, 'grenades1');
+    grenades1.setAll('anchor.x', 0.5);
+    grenades1.setAll('anchor.y', 1);
+    grenades1.setAll('outOfBoundsKill', true);
+    grenades1.setAll('checkWorldBounds', true);
 
-grenades2 = game.add.group();
-grenades2.enableBody = true;
-grenades2.physicsBodyType = Phaser.Physics.ARCADE;
-grenades2.createMultiple(30, 'grenades2');
-grenades2.setAll('anchor.x', 0.5);
-grenades2.setAll('anchor.y', 1);
-grenades2.setAll('outOfBoundsKill', true);
-grenades2.setAll('checkWorldBounds', true);
+    grenades2 = game.add.group();
+    grenades2.enableBody = true;
+    grenades2.physicsBodyType = Phaser.Physics.ARCADE;
+    grenades2.createMultiple(30, 'grenades2');
+    grenades2.setAll('anchor.x', 0.5);
+    grenades2.setAll('anchor.y', 1);
+    grenades2.setAll('outOfBoundsKill', true);
+    grenades2.setAll('checkWorldBounds', true);
 
 //Maybe I will create a Explosions class?
     //  An explosion pool
@@ -111,8 +111,8 @@ grenades2.setAll('checkWorldBounds', true);
     layer.resizeWorld();
 
 //Image for zooming to prevent cut of level map in a view.
-let grid = game.add.image(0, 0, 'background2');
-grid.alpha = 1;
+    let grid = game.add.image(0, 0, 'background2');
+    grid.alpha = 1;
 
 //show borders of layer in game
     // layer.debug = true;
@@ -202,8 +202,8 @@ grid.alpha = 1;
     gravityBall.body.onCollide = new Phaser.Signal();
     gravityBall.body.onCollide.add(gravityBallCollide, this);
 
-    function collideEventP1 (player1, player2) {
-        if (player1.key !== "gravityBall" && player2.key !== "gravityBall" ) {
+    function collideEventP1(player1, player2) {
+        if (player1.key !== "gravityBall" && player2.key !== "gravityBall") {
             if (game.physics.arcade.gravity.y < 10) {
 
                 if (player1.body.x < player2.body.x) {
@@ -212,20 +212,22 @@ grid.alpha = 1;
                         player2.body.velocity.x = -playerSpeedGravity;
 
                     }, 40)
-                };
+                }
+                ;
                 if (player1.body.x > player2.body.x) {
                     setTimeout(function() {
                         player1.body.velocity.x = -playerSpeedGravity;
                         player2.body.velocity.x = playerSpeedGravity;
 
                     }, 40)
-                };
+                }
+                ;
 
             }
         }
     }
 
-    function gravityBallCollide (gravityBall) {
+    function gravityBallCollide(gravityBall) {
         gravityBall.kill();
         if (gravityOff) {
             gravityOff = false;
@@ -249,438 +251,456 @@ grid.alpha = 1;
 
 
 function update() {
-    //For player 1d
-    game.physics.arcade.collide(player1, layer);
-    game.physics.arcade.collide(player2, layer);
-    if (game.physics.arcade.gravity.y !== 0) {
-        player2.body.velocity.x = 0;
-        player1.body.velocity.x = 0;
-    }
-    game.physics.arcade.collide(player1, player2);
-    game.physics.arcade.collide(grenades1, layer);
-    game.physics.arcade.collide(grenades2, layer);
+    if (Client.allowStart) {
+        //For player 1
+        game.physics.arcade.collide(player1, layer);
+        game.physics.arcade.collide(player2, layer);
+        if (game.physics.arcade.gravity.y !== 0) {
+            player2.body.velocity.x = 0;
+            player1.body.velocity.x = 0;
+        }
+        game.physics.arcade.collide(player1, player2);
+        game.physics.arcade.collide(grenades1, layer);
+        game.physics.arcade.collide(grenades2, layer);
 
-    game.physics.arcade.collide(gravityBall, layer);
-    game.physics.arcade.collide(gravityBall, player1);
-    game.physics.arcade.collide(gravityBall, player2);
+        game.physics.arcade.collide(gravityBall, layer);
+        game.physics.arcade.collide(gravityBall, player1);
+        game.physics.arcade.collide(gravityBall, player2);
 
-    //Signals 
-    fireButtonP2.onUp.add(function() {
-        fireP2lock = false
-    }, this);
-    fireButtonP1.onUp.add(function() {
-        fireP1lock = false
-    }, this);
+        //Signals
+        fireButtonP2.onUp.add(function() {
+            fireP2lock = false
+        }, this);
+        fireButtonP1.onUp.add(function() {
+            fireP1lock = false
+        }, this);
 
-    //MOVEMENT LOGIC PLAYER 1--------------------------------------------------------------
-    if (game.physics.arcade.gravity.y !== 0) {
-        if (fireButtonP1.isDown) {
 
-            if (facingP1 === 'right') {
-                player1.animations.play('throwRight');
-            }
-            else if (facingP1 === 'left') {
-                player1.animations.play('throwLeft');
-            }
-            setTimeout(function() {
-                player1.animations.stop(null, true);
-            }, 160);
-            if (game.time.now > grenadeTime1) {
-                if (!fireP1lock) {
+        if (Client.playerId === 1) {
+            //MOVEMENT LOGIC PLAYER 1--------------------------------------------------------------
+            if (game.physics.arcade.gravity.y !== 0) {
+                if (fireButtonP1.isDown) {
 
-                    let throwGrenadeP1 = new ThrowGrenade();
-                    throwGrenadeP1.init(player1, grenadeSpeedP1);
-                    grenadeTime1 = game.time.now + 500;
+                    if (facingP1 === 'right') {
+                        player1.animations.play('throwRight');
+                    }
+                    else if (facingP1 === 'left') {
+                        player1.animations.play('throwLeft');
+                    }
+                    setTimeout(function() {
+                        player1.animations.stop(null, true);
+                    }, 160);
+                    if (game.time.now > grenadeTime1) {
+                        if (!fireP1lock) {
+
+                            let throwGrenadeP1 = new ThrowGrenade();
+                            throwGrenadeP1.init(player1, grenadeSpeedP1);
+                            grenadeTime1 = game.time.now + 500;
+                        }
+                        fireP1lock = true;
+                    }
                 }
-                fireP1lock = true;
-            }
-        }
-        else if (cursors.left.isDown) {
-            facingP1 = 'left';
-            player1.body.velocity.x = -playerSpeed;
-            grenadeSpeedP1 = -grenadeSpeed + player1.body.velocity.x;
+                else if (cursors.left.isDown) {
+                    facingP1 = 'left';
+                    player1.body.velocity.x = -playerSpeed;
+                    grenadeSpeedP1 = -grenadeSpeed + player1.body.velocity.x;
 
-            if (player1.body.onFloor()) {
-                player1.animations.play('left');
-            }
-            else {
-                player1.animations.play('jumpLeft');
-            }
-        }
-        else if (cursors.right.isDown) {
-            facingP1 = 'right';
-            player1.body.velocity.x = playerSpeed;
-            grenadeSpeedP1 = grenadeSpeed + player1.body.velocity.x;
-            if (player1.body.onFloor()) {
-                player1.animations.play('right');
-            }
-            else {
-                player1.animations.play('jumpRight');
-            }
-        }
-        else if (cursors.up.isDown && (player1.body.onFloor() || game.physics.arcade.gravity.y === 0)) {
-            player1.body.velocity.y = -jumpSpeed;
-            if (player1.body.onFloor() || game.physics.arcade.gravity.y === 0) {
-                if (facingP1 === 'right') {
-                    player1.animations.play('jumpRight');
+                    if (player1.body.onFloor()) {
+                        player1.animations.play('left');
+                    }
+                    else {
+                        player1.animations.play('jumpLeft');
+                    }
                 }
-                else if (facingP1 === 'left') {
-                    player1.animations.play('jumpLeft');
+                else if (cursors.right.isDown) {
+                    facingP1 = 'right';
+                    player1.body.velocity.x = playerSpeed;
+                    grenadeSpeedP1 = grenadeSpeed + player1.body.velocity.x;
+                    if (player1.body.onFloor()) {
+                        player1.animations.play('right');
+                    }
+                    else {
+                        player1.animations.play('jumpRight');
+                    }
                 }
-            }
-        }
-        else if (cursors.down.isDown && !player1.body.onFloor()) {
-            player1.body.velocity.y = jumpSpeed;
-            if (!player1.body.onFloor()) {
-                if (facingP1 === 'right') {
-                    player1.animations.play('jumpRight');
-
+                else if (cursors.up.isDown && (player1.body.onFloor() || game.physics.arcade.gravity.y === 0)) {
+                    player1.body.velocity.y = -jumpSpeed;
+                    if (player1.body.onFloor() || game.physics.arcade.gravity.y === 0) {
+                        if (facingP1 === 'right') {
+                            player1.animations.play('jumpRight');
+                        }
+                        else if (facingP1 === 'left') {
+                            player1.animations.play('jumpLeft');
+                        }
+                    }
                 }
-                else if (facingP1 === 'left') {
-                    player1.animations.play('jumpLeft');
-                }
-            }
-        }
-        else {
-            if (facingP1 === 'left') {
-                player1.animations.play('idleLeft');
-            }
-            if (facingP1 === 'right') {
-                player1.animations.play('idleRight');
-            }
-        }
-        moveCameraRight(player1, player2);
-        moveCameraLeft(player1, player2);
-    }
-    //MOVEMENT LOGIC PLAYER 1--------------------------------------------------------------
+                else if (cursors.down.isDown && !player1.body.onFloor()) {
+                    player1.body.velocity.y = jumpSpeed;
+                    if (!player1.body.onFloor()) {
+                        if (facingP1 === 'right') {
+                            player1.animations.play('jumpRight');
 
-    //MOVEMENT IN ZERO GRAVITY LOGIC PLAYER 1--------------------------------------------------------------
-    if (game.physics.arcade.gravity.y === 0) {
-
-        if (fireButtonP1.isDown) {
-
-            if (facingP1 === 'right') {
-                player1.animations.play('throwRight');
-            }
-            else if (facingP1 === 'left') {
-                player1.animations.play('throwLeft');
-            }
-            setTimeout(function() {
-                player1.animations.stop(null, true);
-            }, 160);
-            if (game.time.now > grenadeTime1) {
-                if (!fireP1lock) {
-
-                    let throwGrenadeP1 = new ThrowGrenade();
-                    throwGrenadeP1.init(player1, grenadeSpeedP1);
-                    grenadeTime1 = game.time.now + 500;
-                }
-                fireP1lock = true;
-            }
-        }
-        else if (cursors.left.isDown) {
-            facingP1 = 'left';
-            grenadeSpeedP1 = -(grenadeSpeed + 150);
-            if (Math.abs(player1.body.velocity.x) < 10) {
-                playerSpeedGravity = -150;
-                playerSpeedGravityCheck = 0;
-                player1.body.velocity.x = playerSpeedGravity;
-                if (player1.body.onFloor()) {
-                    player1.animations.play('left');
+                        }
+                        else if (facingP1 === 'left') {
+                            player1.animations.play('jumpLeft');
+                        }
+                    }
                 }
                 else {
-                    player1.animations.play('jumpLeft');
+                    if (facingP1 === 'left') {
+                        player1.animations.play('idleLeft');
+                    }
+                    if (facingP1 === 'right') {
+                        player1.animations.play('idleRight');
+                    }
                 }
+                // moveCameraRight(player1, player2);
+                // moveCameraLeft(player1, player2);
             }
-        }
-        else if (cursors.right.isDown) {
-            facingP1 = 'right';
-            grenadeSpeedP1 = (grenadeSpeed + 150);
+            //MOVEMENT LOGIC PLAYER 1--------------------------------------------------------------
 
-            if (Math.abs(player1.body.velocity.x) < 10) {
-                playerSpeedGravity = 150;
-                playerSpeedGravityCheck = 0;
-                player1.body.velocity.x = playerSpeedGravity;
+            //MOVEMENT IN ZERO GRAVITY LOGIC PLAYER 1--------------------------------------------------------------
+            if (game.physics.arcade.gravity.y === 0) {
 
-                if (player1.body.onFloor()) {
-                    player1.animations.play('right');
+                if (fireButtonP1.isDown) {
+
+                    if (facingP1 === 'right') {
+                        player1.animations.play('throwRight');
+                    }
+                    else if (facingP1 === 'left') {
+                        player1.animations.play('throwLeft');
+                    }
+                    setTimeout(function() {
+                        player1.animations.stop(null, true);
+                    }, 160);
+                    if (game.time.now > grenadeTime1) {
+                        if (!fireP1lock) {
+
+                            let throwGrenadeP1 = new ThrowGrenade();
+                            throwGrenadeP1.init(player1, grenadeSpeedP1);
+                            grenadeTime1 = game.time.now + 500;
+                        }
+                        fireP1lock = true;
+                    }
+                }
+                else if (cursors.left.isDown) {
+                    facingP1 = 'left';
+                    grenadeSpeedP1 = -(grenadeSpeed + 150);
+                    if (Math.abs(player1.body.velocity.x) < 10) {
+                        playerSpeedGravity = -150;
+                        playerSpeedGravityCheck = 0;
+                        player1.body.velocity.x = playerSpeedGravity;
+                        if (player1.body.onFloor()) {
+                            player1.animations.play('left');
+                        }
+                        else {
+                            player1.animations.play('jumpLeft');
+                        }
+                    }
+                }
+                else if (cursors.right.isDown) {
+                    facingP1 = 'right';
+                    grenadeSpeedP1 = (grenadeSpeed + 150);
+
+                    if (Math.abs(player1.body.velocity.x) < 10) {
+                        playerSpeedGravity = 150;
+                        playerSpeedGravityCheck = 0;
+                        player1.body.velocity.x = playerSpeedGravity;
+
+                        if (player1.body.onFloor()) {
+                            player1.animations.play('right');
+                        }
+                        else {
+                            player1.animations.play('jumpRight');
+                        }
+                    }
+                }
+                else if (cursors.up.isDown && (Math.abs(player1.body.velocity.y) < 10) && (Math.abs(player1.body.velocity.x) < 10)) {
+                    player1.body.velocity.y = -jumpSpeed;
+                    if (player1.body.onFloor() || game.physics.arcade.gravity.y === 0) {
+                        if (facingP1 === 'right') {
+                            player1.animations.play('jumpRight');
+                        }
+                        else if (facingP1 === 'left') {
+                            player1.animations.play('jumpLeft');
+                        }
+                    }
+                }
+                else if (cursors.down.isDown && (Math.abs(player1.body.velocity.y) < 10) && (Math.abs(player1.body.velocity.x) < 10)) {
+                    player1.body.velocity.y = jumpSpeed;
+                    if (!player1.body.onFloor()) {
+                        if (facingP1 === 'right') {
+                            player1.animations.play('jumpRight');
+                        }
+                        else if (facingP1 === 'left') {
+                            player1.animations.play('jumpLeft');
+                        }
+                    }
                 }
                 else {
-                    player1.animations.play('jumpRight');
+                    if (facingP1 === 'left') {
+                        player1.animations.play('idleLeft');
+                    }
+                    if (facingP1 === 'right') {
+                        player1.animations.play('idleRight');
+                    }
                 }
+                // moveCameraRight(player1, player2);
+                // moveCameraLeft(player1, player2);
             }
         }
-        else if (cursors.up.isDown && (Math.abs(player1.body.velocity.y) < 10) && (Math.abs(player1.body.velocity.x) < 10)) {
-            player1.body.velocity.y = -jumpSpeed;
-            if (player1.body.onFloor() || game.physics.arcade.gravity.y === 0) {
-                if (facingP1 === 'right') {
-                    player1.animations.play('jumpRight');
-                }
-                else if (facingP1 === 'left') {
-                    player1.animations.play('jumpLeft');
-                }
-            }
-        }
-        else if (cursors.down.isDown && (Math.abs(player1.body.velocity.y) < 10) && (Math.abs(player1.body.velocity.x) < 10)) {
-            player1.body.velocity.y = jumpSpeed;
-            if (!player1.body.onFloor()) {
-                if (facingP1 === 'right') {
-                    player1.animations.play('jumpRight');
-                }
-                else if (facingP1 === 'left') {
-                    player1.animations.play('jumpLeft');
-                }
-            }
-        }
-        else {
-            if (facingP1 === 'left') {
-                player1.animations.play('idleLeft');
-            }
-            if (facingP1 === 'right') {
-                player1.animations.play('idleRight');
-            }
-        }
+        //MOVEMENT LOGIC PLAYER 1--------------------------------------------------------------
         moveCameraRight(player1, player2);
         moveCameraLeft(player1, player2);
-    }
-    //MOVEMENT LOGIC PLAYER 1--------------------------------------------------------------
-    //Место для перекидки камеры по оси Y вниз:
-    moveCameraDown(player1, player2);
-    //Место для перекидки камеры по оси Y вверх:
-    moveCameraTop(player1, player2);
+        //Место для перекидки камеры по оси Y вниз:
+        moveCameraDown(player1, player2);
+        //Место для перекидки камеры по оси Y вверх:
+        moveCameraTop(player1, player2);
 
-    //For PLAYER 2
+        //For PLAYER 2
 //MOVEMENT LOGIC PLAYER 2--------------------------------------------------------------
-if (game.physics.arcade.gravity.y !== 0) {
-    if (fireButtonP2.isDown) {
+        if (Client.playerId === 2) {
+            if (game.physics.arcade.gravity.y !== 0) {
+                if (fireButtonP2.isDown) {
 
-        if (facingP2 === 'right') {
-            player2.animations.play('throwRight');
-        }
-        else if (facingP2 === 'left') {
-            player2.animations.play('throwLeft');
-        }
-        setTimeout(function() {
-            player2.animations.stop(null, true);
-        }, 160);
-        if (game.time.now > grenadeTime2) {
-            if (!fireP2lock) {
+                    if (facingP2 === 'right') {
+                        player2.animations.play('throwRight');
+                    }
+                    else if (facingP2 === 'left') {
+                        player2.animations.play('throwLeft');
+                    }
+                    setTimeout(function() {
+                        player2.animations.stop(null, true);
+                    }, 160);
+                    if (game.time.now > grenadeTime2) {
+                        if (!fireP2lock) {
 
-                let throwGrenadeP2 = new ThrowGrenade();
-                throwGrenadeP2.init(player2, grenadeSpeedP2);
-                grenadeTime2 = game.time.now + 500;
-            }
-            fireP2lock = true;
-        }
-    }
-    else if (controls.left.isDown) {
-            facingP2 = 'left';
-            player2.body.velocity.x = -playerSpeed;
-            grenadeSpeedP2 = -grenadeSpeed + player2.body.velocity.x;
-
-            if (player2.body.onFloor()) {
-                player2.animations.play('left');
-            }
-            else {
-                player2.animations.play('jumpLeft');
-            }
-        }
-        else if (controls.right.isDown) {
-            facingP2 = 'right';
-            player2.body.velocity.x = playerSpeed;
-            grenadeSpeedP2 = grenadeSpeed + player2.body.velocity.x;
-            if (player2.body.onFloor()) {
-                player2.animations.play('right');
-            }
-            else {
-                player2.animations.play('jumpRight');
-            }
-        }
-        else if (controls.up.isDown && (player2.body.onFloor() || game.physics.arcade.gravity.y === 0)) {
-            player2.body.velocity.y = -jumpSpeed;
-            if (player2.body.onFloor() || game.physics.arcade.gravity.y === 0) {
-                if (facingP2 === 'right') {
-                    player2.animations.play('jumpRight');
+                            let throwGrenadeP2 = new ThrowGrenade();
+                            throwGrenadeP2.init(player2, grenadeSpeedP2);
+                            grenadeTime2 = game.time.now + 500;
+                        }
+                        fireP2lock = true;
+                    }
                 }
-                else if (facingP2 === 'left') {
-                    player2.animations.play('jumpLeft');
+                else if (controls.left.isDown) {
+                    facingP2 = 'left';
+                    player2.body.velocity.x = -playerSpeed;
+                    grenadeSpeedP2 = -grenadeSpeed + player2.body.velocity.x;
+
+                    if (player2.body.onFloor()) {
+                        player2.animations.play('left');
+                    }
+                    else {
+                        player2.animations.play('jumpLeft');
+                    }
                 }
-            }
-        }
-        else if (controls.down.isDown && !player2.body.onFloor()) {
-            player2.body.velocity.y = jumpSpeed;
-            if (!player2.body.onFloor()) {
-                if (facingP2 === 'right') {
-                    player2.animations.play('jumpRight');
-
+                else if (controls.right.isDown) {
+                    facingP2 = 'right';
+                    player2.body.velocity.x = playerSpeed;
+                    grenadeSpeedP2 = grenadeSpeed + player2.body.velocity.x;
+                    if (player2.body.onFloor()) {
+                        player2.animations.play('right');
+                    }
+                    else {
+                        player2.animations.play('jumpRight');
+                    }
                 }
-                else if (facingP2 === 'left') {
-                    player2.animations.play('jumpLeft');
+                else if (controls.up.isDown && (player2.body.onFloor() || game.physics.arcade.gravity.y === 0)) {
+                    player2.body.velocity.y = -jumpSpeed;
+                    if (player2.body.onFloor() || game.physics.arcade.gravity.y === 0) {
+                        if (facingP2 === 'right') {
+                            player2.animations.play('jumpRight');
+                        }
+                        else if (facingP2 === 'left') {
+                            player2.animations.play('jumpLeft');
+                        }
+                    }
                 }
-            }
-        }
-        else {
-            if (facingP2 === 'left') {
-                player2.animations.play('idleLeft');
-            }
-            if (facingP2 === 'right') {
-                player2.animations.play('idleRight');
-            }
-        }
-        moveCameraRight(player2, player1);
-        moveCameraLeft(player2, player1);
-    }
-    //MOVEMENT LOGIC PLAYER 2--------------------------------------------------------------
+                else if (controls.down.isDown && !player2.body.onFloor()) {
+                    player2.body.velocity.y = jumpSpeed;
+                    if (!player2.body.onFloor()) {
+                        if (facingP2 === 'right') {
+                            player2.animations.play('jumpRight');
 
-    //MOVEMENT IN ZERO GRAVITY LOGIC PLAYER 2--------------------------------------------------------------
-    if (game.physics.arcade.gravity.y === 0) {
-
-        if (fireButtonP2.isDown) {
-
-            if (facingP2 === 'right') {
-                player2.animations.play('throwRight');
-            }
-            else if (facingP2 === 'left') {
-                player2.animations.play('throwLeft');
-            }
-            setTimeout(function() {
-                player2.animations.stop(null, true);
-            }, 160);
-            if (game.time.now > grenadeTime2) {
-                if (!fireP2lock) {
-
-                    let throwGrenadeP2 = new ThrowGrenade();
-                    throwGrenadeP2.init(player2, grenadeSpeedP2);
-                    grenadeTime2 = game.time.now + 500;
-                }
-                fireP2lock = true;
-            }
-        }
-        else if (controls.left.isDown) {
-            facingP2 = 'left';
-            grenadeSpeedP2 = -(grenadeSpeed + 150);
-            if (Math.abs(player2.body.velocity.x) < 10) {
-                playerSpeedGravity = -150;
-                playerSpeedGravityCheck = 0;
-                player2.body.velocity.x = playerSpeedGravity;
-                if (player2.body.onFloor()) {
-                    player2.animations.play('left');
+                        }
+                        else if (facingP2 === 'left') {
+                            player2.animations.play('jumpLeft');
+                        }
+                    }
                 }
                 else {
-                    player2.animations.play('jumpLeft');
+                    if (facingP2 === 'left') {
+                        player2.animations.play('idleLeft');
+                    }
+                    if (facingP2 === 'right') {
+                        player2.animations.play('idleRight');
+                    }
                 }
+                // moveCameraRight(player2, player1);
+                // moveCameraLeft(player2, player1);
             }
-        }
-        else if (controls.right.isDown) {
-            facingP2 = 'right';
-            grenadeSpeedP2 = (grenadeSpeed + 150);
+            //MOVEMENT LOGIC PLAYER 2--------------------------------------------------------------
 
-            if (Math.abs(player2.body.velocity.x) < 10) {
-                playerSpeedGravity = 150;
-                playerSpeedGravityCheck = 0;
-                player2.body.velocity.x = playerSpeedGravity;
+            //MOVEMENT IN ZERO GRAVITY LOGIC PLAYER 2--------------------------------------------------------------
+            if (game.physics.arcade.gravity.y === 0) {
 
-                if (player2.body.onFloor()) {
-                    player2.animations.play('right');
+                if (fireButtonP2.isDown) {
+
+                    if (facingP2 === 'right') {
+                        player2.animations.play('throwRight');
+                    }
+                    else if (facingP2 === 'left') {
+                        player2.animations.play('throwLeft');
+                    }
+                    setTimeout(function() {
+                        player2.animations.stop(null, true);
+                    }, 160);
+                    if (game.time.now > grenadeTime2) {
+                        if (!fireP2lock) {
+
+                            let throwGrenadeP2 = new ThrowGrenade();
+                            throwGrenadeP2.init(player2, grenadeSpeedP2);
+                            grenadeTime2 = game.time.now + 500;
+                        }
+                        fireP2lock = true;
+                    }
+                }
+                else if (controls.left.isDown) {
+                    facingP2 = 'left';
+                    grenadeSpeedP2 = -(grenadeSpeed + 150);
+                    if (Math.abs(player2.body.velocity.x) < 10) {
+                        playerSpeedGravity = -150;
+                        playerSpeedGravityCheck = 0;
+                        player2.body.velocity.x = playerSpeedGravity;
+                        if (player2.body.onFloor()) {
+                            player2.animations.play('left');
+                        }
+                        else {
+                            player2.animations.play('jumpLeft');
+                        }
+                    }
+                }
+                else if (controls.right.isDown) {
+                    facingP2 = 'right';
+                    grenadeSpeedP2 = (grenadeSpeed + 150);
+
+                    if (Math.abs(player2.body.velocity.x) < 10) {
+                        playerSpeedGravity = 150;
+                        playerSpeedGravityCheck = 0;
+                        player2.body.velocity.x = playerSpeedGravity;
+
+                        if (player2.body.onFloor()) {
+                            player2.animations.play('right');
+                        }
+                        else {
+                            player2.animations.play('jumpRight');
+                        }
+                    }
+                }
+                else if (controls.up.isDown && (Math.abs(player2.body.velocity.y) < 10) &&
+                    (Math.abs(player2.body.velocity.x) < 10)) {
+                    player2.body.velocity.y = -jumpSpeed;
+                    if (player2.body.onFloor() || game.physics.arcade.gravity.y === 0) {
+                        if (facingP2 === 'right') {
+                            player2.animations.play('jumpRight');
+                        }
+                        else if (facingP2 === 'left') {
+                            player2.animations.play('jumpLeft');
+                        }
+                    }
+                }
+                else if (controls.down.isDown && (Math.abs(player2.body.velocity.y) < 10) &&
+                    (Math.abs(player2.body.velocity.x) < 10)) {
+                    player2.body.velocity.y = jumpSpeed;
+                    if (!player2.body.onFloor()) {
+                        if (facingP2 === 'right') {
+                            player2.animations.play('jumpRight');
+                        }
+                        else if (facingP2 === 'left') {
+                            player2.animations.play('jumpLeft');
+                        }
+                    }
                 }
                 else {
-                    player2.animations.play('jumpRight');
+                    if (facingP2 === 'left') {
+                        player2.animations.play('idleLeft');
+                    }
+                    if (facingP2 === 'right') {
+                        player2.animations.play('idleRight');
+                    }
                 }
+                // moveCameraRight(player2, player1);
+                // moveCameraLeft(player2, player1);
             }
         }
-        else if (controls.up.isDown && (Math.abs(player2.body.velocity.y) < 10) && (Math.abs(player2.body.velocity.x) < 10)) {
-            player2.body.velocity.y = -jumpSpeed;
-            if (player2.body.onFloor() || game.physics.arcade.gravity.y === 0) {
-                if (facingP2 === 'right') {
-                    player2.animations.play('jumpRight');
-                }
-                else if (facingP2 === 'left') {
-                    player2.animations.play('jumpLeft');
-                }
-            }
-        }
-        else if (controls.down.isDown && (Math.abs(player2.body.velocity.y) < 10) && (Math.abs(player2.body.velocity.x) < 10)) {
-            player2.body.velocity.y = jumpSpeed;
-            if (!player2.body.onFloor()) {
-                if (facingP2 === 'right') {
-                    player2.animations.play('jumpRight');
-                }
-                else if (facingP2 === 'left') {
-                    player2.animations.play('jumpLeft');
-                }
-            }
-        }
-        else {
-            if (facingP2 === 'left') {
-                player2.animations.play('idleLeft');
-            }
-            if (facingP2 === 'right') {
-                player2.animations.play('idleRight');
-            }
-        }
+        //MOVEMENT LOGIC PLAYER 2--------------------------------------------------------------
         moveCameraRight(player2, player1);
         moveCameraLeft(player2, player1);
-    }
-    //MOVEMENT LOGIC PLAYER 2--------------------------------------------------------------
+        moveCameraTop(player2, player1);
+        moveCameraDown(player2, player1);
+        //  Run collision
+        game.physics.arcade.overlap(grenades2, player1, collisionHandler, null, this);
+        game.physics.arcade.overlap(grenades1, player2, collisionHandler, null, this);
 
-    moveCameraTop(player2, player1);
-    moveCameraDown(player2, player1);
-    //  Run collision
-    game.physics.arcade.overlap(grenades2, player1, collisionHandler, null, this);
-    game.physics.arcade.overlap(grenades1, player2, collisionHandler, null, this);
-
-    //When players are close to each other on Y zoom camera in
-    if ((Math.abs(player1.position.y - player2.position.y) <= game.camera.height * 0.33) &&
-        (Math.abs(player1.position.x - player2.position.x) <= game.camera.width * 0.33)) {
-        zoomIn();
-    timeText.fontSize = timeTextFontSize;
-}
+        //When players are close to each other on Y zoom camera in
+        if ((Math.abs(player1.position.y - player2.position.y) <= game.camera.height * 0.33) &&
+            (Math.abs(player1.position.x - player2.position.x) <= game.camera.width * 0.33)) {
+            zoomIn();
+            timeText.fontSize = timeTextFontSize;
+        }
 
 //Respawn GRAVITYBALL
-if ( Math.floor(this.game.time.totalElapsedSeconds(), 1) === 20 && !gravityBall.alive ) {
-    respawnGravityBall()
-};
-if ( Math.floor(this.game.time.totalElapsedSeconds(), 1) === 60 && !gravityBall.alive ) {
-    respawnGravityBall()
-};
-if ( Math.floor(this.game.time.totalElapsedSeconds(), 1) === 90 && !gravityBall.alive ) {
-    respawnGravityBall()
-};
+        if (Math.floor(this.game.time.totalElapsedSeconds(), 1) === 20 && !gravityBall.alive) {
+            respawnGravityBall()
+        }
+        if (Math.floor(this.game.time.totalElapsedSeconds(), 1) === 60 && !gravityBall.alive) {
+            respawnGravityBall()
+        }
+        if (Math.floor(this.game.time.totalElapsedSeconds(), 1) === 90 && !gravityBall.alive) {
+            respawnGravityBall()
+        }
 
-function respawnGravityBall() {
-    let xRand =  game.world.width * Math.random();
-    let yRand =  game.world.height * Math.random();
-    if (xRand < 50) {xRand = 80};
-    if (xRand > 950) {xRand = 900};
-    if (yRand > 700) {yRand = 650};
+        function respawnGravityBall() {
+            let xRand = game.world.width * Math.random();
+            let yRand = game.world.height * Math.random();
+            if (xRand < 50) {
+                xRand = 80
+            }
+            if (xRand > 950) {
+                xRand = 900
+            }
+            if (yRand > 700) {
+                yRand = 650
+            }
 
-    gravityBall.alpha = 0;
-    gravityBall.reset(xRand, yRand);
-    setTimeout(function() {
-        gravityBall.alpha = 0.3
-    }, 333);
-    setTimeout(function() {
-        gravityBall.alpha = 0.66
-    }, 666);
-    setTimeout(function() {
-        gravityBall.alpha = 1
-    }, 1000);
-}
+            gravityBall.alpha = 0;
+            gravityBall.reset(xRand, yRand);
+            setTimeout(function() {
+                gravityBall.alpha = 0.3
+            }, 333);
+            setTimeout(function() {
+                gravityBall.alpha = 0.66
+            }, 666);
+            setTimeout(function() {
+                gravityBall.alpha = 1
+            }, 1000);
+        }
 
-if (Math.floor(this.game.time.totalElapsedSeconds(), 1) > allottedTime) {
-    killWhatNeed();
-        //Pin Game Over text to Center!!!
-        stateTextOutput();
+
+        if (Math.floor(this.game.time.totalElapsedSeconds(), 1) > allottedTime) {
+            killWhatNeed();
+            //Pin Game Over text to Center!!!
+            stateTextOutput();
+        }
+        else {
+            timeText.text = 'Time: ' + (allottedTime - Math.floor(this.game.time.totalElapsedSeconds(), 1));
+        }
+
+        //the "click to restart"
+        if (game.input.keyboard.isDown(Phaser.Keyboard.ENTER) && !lockRestart) {
+            location.reload();
+        }
     }
-    else {
-        timeText.text = 'Time: ' + (allottedTime - Math.floor(this.game.time.totalElapsedSeconds(), 1));
-    }
-    //the "click to restart"
-    if (game.input.keyboard.isDown(Phaser.Keyboard.ENTER) && !lockRestart) {
-        location.reload();
-    }
-
-
     //Pin scores to players
     scoreTextP1.x = Math.floor(player1.x + player1.width / 2 - 5);
     scoreTextP1.y = Math.floor(player1.y - player1.height + 25);
@@ -688,26 +708,33 @@ if (Math.floor(this.game.time.totalElapsedSeconds(), 1) > allottedTime) {
     scoreTextP2.y = Math.floor(player2.y - player2.height + 25);
 
 //Pin timeText to view center
-timeText.cameraOffset.x = game.camera.width * 0.5;
-timeText.cameraOffset.y = game.camera.height * 0.05;
-};
+    timeText.cameraOffset.x = game.camera.width * 0.5;
+    timeText.cameraOffset.y = game.camera.height * 0.05;
+
+}
 
 function randX() {
-    let xRand =  game.world.width * Math.random();
-    if (xRand < 50) {xRand = 80};
-    if (xRand > 950) {xRand = 900};
+    let xRand = game.world.width * Math.random();
+    if (xRand < 50) {
+        xRand = 80
+    }
+    if (xRand > 950) {
+        xRand = 900
+    }
     return xRand
 }
 
 function randY() {
-    let yRand =  game.world.height * Math.random();
-    if (yRand > 700) {yRand = 650};
+    let yRand = game.world.height * Math.random();
+    if (yRand > 700) {
+        yRand = 650
+    }
     return yRand
 }
 
 function moveCameraLeft(player1, player2) {
 //Если Player1 вышел из вида (кадра) камеры слева
-if (player1.position.x < game.camera.view.x) {
+    if (player1.position.x < game.camera.view.x) {
         // console.log('зашёл за камеру слева');
         //и Player2 в кадре камеры
         if (player2.position.x < game.camera.view.x + game.camera.width) {
@@ -725,7 +752,7 @@ if (player1.position.x < game.camera.view.x) {
 
 function moveCameraRight(player1, player2) {
 //Если Player1 вышел из вида (кадра) камеры справа
-if (player1.position.x + player1.body.width > game.camera.view.x + game.camera.width) {
+    if (player1.position.x + player1.body.width > game.camera.view.x + game.camera.width) {
         // console.log('зашёл за камеру справа');
         //и Player2 в кадре камеры
         if (player2.position.x - player1.body.width > game.camera.view.x) {
