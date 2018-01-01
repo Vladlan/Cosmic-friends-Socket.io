@@ -92,16 +92,16 @@ function create() {
     grenades2.setAll('checkWorldBounds', true);
 
 //Maybe I will create a Explosions class?
-    //  An explosion pool
-    explosions = game.add.group();
-    explosions.createMultiple(30, 'kaboom');
-    explosions.forEach(setupPlayer, this);
+//  An explosion pool
 
-    function setupPlayer(player) {
-        player.anchor.x = 0.5;
-        player.anchor.y = 0.5;
-        player.animations.add('kaboom');
-    };
+    // explosions = game.add.group();
+    // explosions.createMultiple(30, 'kaboom');
+    // explosions.forEach(setupPlayer, this);
+    // function setupPlayer(player) {
+    //     player.anchor.x = 0.5;
+    //     player.anchor.y = 0.5;
+    //     player.animations.add('kaboom');
+    // };
 
     map = game.add.tilemap('level1');
     map.addTilesetImage('tiles-1');
@@ -118,15 +118,21 @@ function create() {
     // layer.debug = true;
 
     //for random position
-    player1 = game.add.sprite(randX(), randY(), 'dude');
-    player2 = game.add.sprite(randX(), randY(), 'dude2');
+    // player1 = game.add.sprite(randX(), randY(), 'dude');
+    // player2 = game.add.sprite(randX(), randY(), 'dude2');
+    player1 = game.add.sprite(40, 40, 'dude');
+    player2 = game.add.sprite(450, 40, 'dude2');
 
-    gravityBall = game.add.sprite(1500,
-        1500, 'gravityBall');
-    game.physics.enable(gravityBall, Phaser.Physics.ARCADE);
-    gravityBall.body.collideWorldBounds = true;
-    gravityBall.body.setSize(32, 32, 0, 0);
-    gravityBall.kill();
+    //GRAVITY BALL
+
+    // gravityBall = game.add.sprite(1500,
+    //     1500, 'gravityBall');
+    // game.physics.enable(gravityBall, Phaser.Physics.ARCADE);
+    // gravityBall.body.collideWorldBounds = true;
+    // gravityBall.body.setSize(32, 32, 0, 0);
+    // gravityBall.kill();
+    // gravityBall.body.onCollide = new Phaser.Signal();
+    // gravityBall.body.onCollide.add(gravityBallCollide, this);
 
     //PLAYER1
     // initializing first player in random place in the game world
@@ -188,7 +194,12 @@ function create() {
     newSize = gameSize.clone();
     //----------To zooming out our game (end)-------------
 
-    stateText = game.add.text(game.camera.view.x + game.camera.width * 0.5, game.camera.view.y + game.camera.height * 0.5, ' ',
+
+// Text (stateText) when GAME IS OVER
+    stateText = game.add.text(
+        game.camera.view.x + game.camera.width * 0.5,
+        game.camera.view.y + game.camera.height * 0.5,
+        ' ',
         {font: '44px Orbitron', fill: '#fff', align: 'center'});
     stateText.anchor.setTo(0.5, 0.5);
     stateText.visible = false;
@@ -196,57 +207,9 @@ function create() {
     stateText.inputEnabled = true;
     stateText.input.enableDrag();
 
-    player1.body.onCollide = new Phaser.Signal();
-    player1.body.onCollide.add(collideEventP1, this);
-
-    gravityBall.body.onCollide = new Phaser.Signal();
-    gravityBall.body.onCollide.add(gravityBallCollide, this);
-
-    function collideEventP1(player1, player2) {
-        if (player1.key !== "gravityBall" && player2.key !== "gravityBall") {
-            if (game.physics.arcade.gravity.y < 10) {
-
-                if (player1.body.x < player2.body.x) {
-                    setTimeout(function() {
-                        player1.body.velocity.x = playerSpeedGravity;
-                        player2.body.velocity.x = -playerSpeedGravity;
-
-                    }, 40)
-                }
-                ;
-                if (player1.body.x > player2.body.x) {
-                    setTimeout(function() {
-                        player1.body.velocity.x = -playerSpeedGravity;
-                        player2.body.velocity.x = playerSpeedGravity;
-
-                    }, 40)
-                }
-                ;
-
-            }
-        }
-    }
-
-    function gravityBallCollide(gravityBall) {
-        gravityBall.kill();
-        if (gravityOff) {
-            gravityOff = false;
-            setTimeout(function() {
-                // console.log(window);
-                if (game.physics.arcade.gravity.y === 0) {
-                    game.physics.arcade.gravity.y = 750;
-                    jumpSpeed = 450;
-                }
-                else {
-                    game.physics.arcade.gravity.y = 0;
-                    jumpSpeed = 200;
-                    // player2.body.acceleration.set(0);
-                    // player2.body.mass = 0;
-                }
-                gravityOff = true;
-            }, 100);
-        }
-    }
+    //Handle collision between players When gravity is zero
+    // player1.body.onCollide = new Phaser.Signal();
+    // player1.body.onCollide.add(collideEventP1, this);
 }
 
 
@@ -268,12 +231,28 @@ function update() {
         game.physics.arcade.collide(gravityBall, player2);
 
         //Signals
-        fireButtonP2.onUp.add(function() {
-            fireP2lock = false
-        }, this);
-        fireButtonP1.onUp.add(function() {
-            fireP1lock = false
-        }, this);
+        // fireButtonP2.onUp.add(function() {
+        //     fireP2lock = false
+        // }, this);
+        // fireButtonP1.onUp.add(function() {
+        //     fireP1lock = false
+        // }, this);
+
+        Client.socket.on('change pos of P1 for P2', function(coors) {
+            if (Client.playerId === 2) {
+                player1.kill();
+            console.log(`changing position of P1 for P2 x=${coors.x} and y=${coors.y}`);
+            player1.reset(coors.x, coors.y);
+        }
+    });
+
+            Client.socket.on('change pos of P2 for P1', function(coors) {
+                if (Client.playerId === 1) {
+                    player2.kill();
+                console.log(`changing position of P2 for P1 x=${coors.x} and y=${coors.y}`);
+                player2.reset(coors.x, coors.y);
+                }
+            });
 
 
         if (Client.playerId === 1) {
@@ -311,6 +290,7 @@ function update() {
                     else {
                         player1.animations.play('jumpLeft');
                     }
+                    Client.socket.emit('player 1 moved', {x: player1.body.x, y: player1.body.y});
                 }
                 else if (cursors.right.isDown) {
                     facingP1 = 'right';
@@ -322,6 +302,7 @@ function update() {
                     else {
                         player1.animations.play('jumpRight');
                     }
+                    Client.socket.emit('player 1 moved', {x: player1.body.x, y: player1.body.y});
                 }
                 else if (cursors.up.isDown && (player1.body.onFloor() || game.physics.arcade.gravity.y === 0)) {
                     player1.body.velocity.y = -jumpSpeed;
@@ -333,6 +314,7 @@ function update() {
                             player1.animations.play('jumpLeft');
                         }
                     }
+                    Client.socket.emit('player 1 moved', {x: player1.body.x, y: player1.body.y});
                 }
                 else if (cursors.down.isDown && !player1.body.onFloor()) {
                     player1.body.velocity.y = jumpSpeed;
@@ -345,6 +327,7 @@ function update() {
                             player1.animations.play('jumpLeft');
                         }
                     }
+                    Client.socket.emit('player 1 moved', {x: player1.body.x, y: player1.body.y});
                 }
                 else {
                     if (facingP1 === 'left') {
@@ -457,6 +440,8 @@ function update() {
         //Место для перекидки камеры по оси Y вверх:
         moveCameraTop(player1, player2);
 
+
+
         //For PLAYER 2
 //MOVEMENT LOGIC PLAYER 2--------------------------------------------------------------
         if (Client.playerId === 2) {
@@ -493,6 +478,7 @@ function update() {
                     else {
                         player2.animations.play('jumpLeft');
                     }
+                    Client.socket.emit('player 2 moved', {x: player2.body.x, y: player2.body.y});
                 }
                 else if (controls.right.isDown) {
                     facingP2 = 'right';
@@ -504,6 +490,7 @@ function update() {
                     else {
                         player2.animations.play('jumpRight');
                     }
+                    Client.socket.emit('player 2 moved', {x: player2.body.x, y: player2.body.y});
                 }
                 else if (controls.up.isDown && (player2.body.onFloor() || game.physics.arcade.gravity.y === 0)) {
                     player2.body.velocity.y = -jumpSpeed;
@@ -515,6 +502,7 @@ function update() {
                             player2.animations.play('jumpLeft');
                         }
                     }
+                    Client.socket.emit('player 2 moved', {x: player2.body.x, y: player2.body.y});
                 }
                 else if (controls.down.isDown && !player2.body.onFloor()) {
                     player2.body.velocity.y = jumpSpeed;
@@ -526,6 +514,7 @@ function update() {
                         else if (facingP2 === 'left') {
                             player2.animations.play('jumpLeft');
                         }
+                        Client.socket.emit('player 2 moved', {x: player2.body.x, y: player2.body.y});
                     }
                 }
                 else {
@@ -638,9 +627,11 @@ function update() {
         moveCameraLeft(player2, player1);
         moveCameraTop(player2, player1);
         moveCameraDown(player2, player1);
-        //  Run collision
-        game.physics.arcade.overlap(grenades2, player1, collisionHandler, null, this);
-        game.physics.arcade.overlap(grenades1, player2, collisionHandler, null, this);
+
+
+        //  Run collision between players and grenades
+        // game.physics.arcade.overlap(grenades2, player1, collisionHandler, null, this);
+        // game.physics.arcade.overlap(grenades1, player2, collisionHandler, null, this);
 
         //When players are close to each other on Y zoom camera in
         if ((Math.abs(player1.position.y - player2.position.y) <= game.camera.height * 0.33) &&
@@ -650,46 +641,19 @@ function update() {
         }
 
 //Respawn GRAVITYBALL
-        if (Math.floor(this.game.time.totalElapsedSeconds(), 1) === 20 && !gravityBall.alive) {
-            respawnGravityBall()
-        }
-        if (Math.floor(this.game.time.totalElapsedSeconds(), 1) === 60 && !gravityBall.alive) {
-            respawnGravityBall()
-        }
-        if (Math.floor(this.game.time.totalElapsedSeconds(), 1) === 90 && !gravityBall.alive) {
-            respawnGravityBall()
-        }
 
-        function respawnGravityBall() {
-            let xRand = game.world.width * Math.random();
-            let yRand = game.world.height * Math.random();
-            if (xRand < 50) {
-                xRand = 80
-            }
-            if (xRand > 950) {
-                xRand = 900
-            }
-            if (yRand > 700) {
-                yRand = 650
-            }
-
-            gravityBall.alpha = 0;
-            gravityBall.reset(xRand, yRand);
-            setTimeout(function() {
-                gravityBall.alpha = 0.3
-            }, 333);
-            setTimeout(function() {
-                gravityBall.alpha = 0.66
-            }, 666);
-            setTimeout(function() {
-                gravityBall.alpha = 1
-            }, 1000);
-        }
-
-
+//         if (Math.floor(this.game.time.totalElapsedSeconds(), 1) === 20 && !gravityBall.alive) {
+//             respawnGravityBall()
+//         }
+//         if (Math.floor(this.game.time.totalElapsedSeconds(), 1) === 60 && !gravityBall.alive) {
+//             respawnGravityBall()
+//         }
+//         if (Math.floor(this.game.time.totalElapsedSeconds(), 1) === 90 && !gravityBall.alive) {
+//             respawnGravityBall()
+//         }
         if (Math.floor(this.game.time.totalElapsedSeconds(), 1) > allottedTime) {
             killWhatNeed();
-            //Pin Game Over text to Center!!!
+            //Pin GameOver (stateText) text to Center!!!
             stateTextOutput();
         }
         else {
@@ -994,4 +958,76 @@ function stateTextOutput() {
         stateText.visible = true;
     }
     lockRestart = false;
+}
+
+function collideEventP1(player1, player2) {
+    if (player1.key !== "gravityBall" && player2.key !== "gravityBall") {
+        if (game.physics.arcade.gravity.y < 10) {
+
+            if (player1.body.x < player2.body.x) {
+                setTimeout(function() {
+                    player1.body.velocity.x = playerSpeedGravity;
+                    player2.body.velocity.x = -playerSpeedGravity;
+
+                }, 40)
+            }
+            ;
+            if (player1.body.x > player2.body.x) {
+                setTimeout(function() {
+                    player1.body.velocity.x = -playerSpeedGravity;
+                    player2.body.velocity.x = playerSpeedGravity;
+
+                }, 40)
+            }
+            ;
+
+        }
+    }
+}
+
+function gravityBallCollide(gravityBall) {
+    gravityBall.kill();
+    if (gravityOff) {
+        gravityOff = false;
+        setTimeout(function() {
+            // console.log(window);
+            if (game.physics.arcade.gravity.y === 0) {
+                game.physics.arcade.gravity.y = 750;
+                jumpSpeed = 450;
+            }
+            else {
+                game.physics.arcade.gravity.y = 0;
+                jumpSpeed = 200;
+                // player2.body.acceleration.set(0);
+                // player2.body.mass = 0;
+            }
+            gravityOff = true;
+        }, 100);
+    }
+}
+
+function respawnGravityBall() {
+    let xRand = game.world.width * Math.random();
+    let yRand = game.world.height * Math.random();
+    if (xRand < 50) {
+        xRand = 80
+    }
+    if (xRand > 950) {
+        xRand = 900
+    }
+    if (yRand > 700) {
+        yRand = 650
+    }
+
+    gravityBall.alpha = 0;
+    gravityBall.reset(xRand, yRand);
+    setTimeout(function() {
+        gravityBall.alpha = 0.3
+    }, 333);
+    setTimeout(function() {
+        gravityBall.alpha = 0.66
+    }, 666);
+    setTimeout(function() {
+        gravityBall.alpha = 1
+    }, 1000);
 }

@@ -60,15 +60,24 @@ io.on('connection', function(socket) {
     console.log('connection');
     users++;
     console.log('users: ' + users);
-    socket.broadcast.emit('Enter message', users);
+    socket.emit('Enter message', users);
     if (users === 2) {
-        socket.broadcast.emit('Allow start', true);
+        socket.emit('Allow start', true);
     }
     // when the client emits 'new message',
     // this listens and executes
     socket.on('message', function(msg) {
         console.log(msg);
     });
+
+    socket.on('player 1 moved', function(coors) {
+        socket.emit('change pos of P1 for P2', coors);
+    });
+
+    socket.on('player 2 moved', function(coors) {
+        socket.emit('change pos of P2 for P1', coors);
+    });
+
     socket.on('disconnect', function(msg) {
         users--;
         socket.emit('Enter message', users);
